@@ -281,16 +281,12 @@ public class Main extends JavaPlugin implements Listener
 
     }
 
-    public void processEvent_SingleBlock(Cancellable event, Block block) {
-        /*for (Map.Entry<Block, Crate> entry: serverCrates.entrySet()) {
-            Crate crate = entry.getValue();
-            if (block.equals(crate.getWorld().getBlockAt(crate.getCrateLocation()))) {
-                event.setCancelled(true);
-                return;
-            }
-        }*/
+
+    public void processEvent_SingleBlock(Cancellable event, Block block, Player player) {
         Crate crate = serverCrates.get(block);
         if (crate == null) return;
+        if (player != null)
+            player.sendMessage(this.getConfig().getString("deathcrates.action-not-allowed-message"));
         event.setCancelled(true);
     }
 
@@ -343,12 +339,12 @@ public class Main extends JavaPlugin implements Listener
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBurn(BlockBurnEvent burnEvent) {
-        processEvent_SingleBlock(burnEvent, burnEvent.getBlock());
+        processEvent_SingleBlock(burnEvent, burnEvent.getBlock(), null);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockIgnite(BlockIgniteEvent igniteEvent) {
-        processEvent_SingleBlock(igniteEvent, igniteEvent.getBlock());
+        processEvent_SingleBlock(igniteEvent, igniteEvent.getBlock(), igniteEvent.getPlayer());
     }
 
 
