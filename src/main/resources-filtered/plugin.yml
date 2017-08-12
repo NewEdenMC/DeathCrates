@@ -1,0 +1,9 @@
+name: ${artifactId}
+version: ${version}
+main: co.neweden.DeathCrates.Main
+permissions:
+  deathcrates.override:
+    description: For Staff members only, this makes it to where they're able to open and break other people's crates
+  deathcrates.spawnable:
+    description: If a player has this permission a crate will spawn, otherwise their items will drop normally after their death
+commands:

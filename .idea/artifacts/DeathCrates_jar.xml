@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="DeathCrates:jar">
+    <output-path>$PROJECT_DIR$/out/</output-path>
+    <root id="archive" name="DeathCrates.jar">
+      <element id="module-output" name="DeathCrates" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../../BuildTools/BuildTools/Spigot/Spigot-API/target/spigot-api-1.12-R0.1-SNAPSHOT-shaded.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

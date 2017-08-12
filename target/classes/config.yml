@@ -1,0 +1,6 @@
+deathcrates:
+  crate-clear-delay-ms: 10000
+  despawn-time-min: 5
+  respawn-message: §dYour items have been placed into a Death Crate at the location you died at, the Crate will de-spawn after 5 minutes
+  crate-name: NAME's Death Crate
+  insufficient-permissions-message: You're unable to open this crate as it is not yours!
