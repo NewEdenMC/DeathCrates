@@ -1,9 +1,6 @@
 package co.neweden.DeathCrates;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.*;
@@ -185,7 +182,7 @@ public class Main extends JavaPlugin implements Listener
         shulker.setCanPickupItems(false);
         shulker.setCollidable(false);
         shulker.setGlowing(true);
-
+        shulker.setColor(DyeColor.WHITE);
         Crate crate = new Crate(player, pcd, shulker);
         serverCrates.put(crate.getShulker(), crate);
         lastSpawned.put(player, crate);
@@ -194,6 +191,7 @@ public class Main extends JavaPlugin implements Listener
     public void deleteCrate(Crate crate) {
         serverCrates.remove(crate.getShulker());
         crate.getShulker().remove();
+        crate.getShulker().getWorld().spawnParticle(Particle.SMOKE_LARGE, crate.getShulker().getLocation(), 3);
     }
 
     public Crate getCrate(Entity entity) {
