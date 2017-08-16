@@ -15,6 +15,7 @@ public class PlayerCrateData
     private int newExp;
     private long expiryTime;
     private boolean hasSentRespawnMessage;
+    private boolean hasSpawned;
     public PlayerCrateData(Inventory _inventory, int _newExp, long _expiryTime, Location _playerDeathLocation)
     {
         inventory = _inventory;
@@ -25,6 +26,9 @@ public class PlayerCrateData
     }
     public boolean getHasSentRespawnMessage() { return hasSentRespawnMessage; }
     public void setHasSentRespawnMessage(boolean newBool) { hasSentRespawnMessage = newBool; }
+
+    public boolean getHasSpawned() { return hasSpawned; }
+    public void setHasSpawned(boolean newBool) { hasSpawned = newBool; }
     public Inventory getInventory() { return inventory; }
     public Location getPlayerDeathLocation() { return playerDeathLocation; }
     public int getNewExp() { return newExp; }

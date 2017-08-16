@@ -5,3 +5,4 @@ deathcrates:
   crate-name: NAME's Death Crate
   insufficient-permissions-message: §dYou're unable to open this crate as it is not yours!
   action-not-allowed-message: §dYou can't do that
+  crate-unspawnable-message: §dYour crate couldn't be spawned as it would have been spawned in protected territory; Your items have been dropped on the ground at your death location
