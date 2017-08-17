@@ -91,13 +91,12 @@ public class Main extends JavaPlugin implements Listener
         crate.getData().setExpiryTime(
                 System.currentTimeMillis() + (getConfig().getLong("deathcrates.despawn-time-min") * 60 * 1000)
         );
-        if (!crate.getData().getHasSentRespawnMessage()) {
-           if (crate.getData().getHasSpawned())
-           {
-               crate.getOwner().sendMessage(this.getConfig().getString("deathcrates.respawn-message"));
-               crate.getData().setHasSentRespawnMessage(true);
-           }
-        }
+        if (crate.getData().getHasSentRespawnMessage()) return;
+        if (crate.getData().getHasSpawned())
+           crate.getOwner().sendMessage(this.getConfig().getString("deathcrates.respawn-message"));
+        else
+           crate.getOwner().sendMessage(this.getConfig().getString("deathcrates.crate-unspawnable-message"));
+        crate.getData().setHasSentRespawnMessage(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -142,25 +141,21 @@ public class Main extends JavaPlugin implements Listener
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntitySpawn(EntitySpawnEvent spawnEvent) {
-        if (serverCrates.isEmpty()) return;
-        Optional<Crate> opt = serverCrates.values().stream()
-                .filter(c -> c.getShulker().getLocation().equals(spawnEvent.getLocation())
-                        && spawnEvent.getEntityType().equals(EntityType.SHULKER))
+        if (!(spawnEvent.getEntity() instanceof Shulker)) return;
+        Optional<Crate> opt = lastSpawned.values().stream()
+                .filter(c -> c.getShulker().equals(spawnEvent.getEntity()))
                 .findFirst();
         if (!opt.isPresent()) return;
         Crate crate = opt.get();
 
-        if (spawnEvent.isCancelled()) {
-            crate.getData().setHasSpawned(false);
-            for (ItemStack i: crate.getData().getInventory().getContents()) {
-                if (i == null) continue;
-                if (i.getType().equals(Material.AIR)) continue;
-                crate.getShulker().getWorld().dropItemNaturally(crate.getShulker().getLocation(), i);
-                crate.getData().getInventory().remove(i);
-            }
-            crate.getOwner().sendMessage(this.getConfig().getString("deathcrates.crate-unspawnable-message"));
-            deleteCrate(crate);
+        crate.getData().setHasSpawned(!spawnEvent.isCancelled());
+        for (ItemStack i: crate.getData().getInventory().getContents()) {
+            if (i == null) continue;
+            if (i.getType().equals(Material.AIR)) continue;
+            crate.getShulker().getWorld().dropItemNaturally(crate.getShulker().getLocation(), i);
+            crate.getData().getInventory().remove(i);
         }
+        deleteCrate(crate);
     }
 
     public void spawnCrate(Location location, List<ItemStack> drops, int newXP, Player player) {
