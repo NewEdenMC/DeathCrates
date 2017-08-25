@@ -27,6 +27,7 @@ public class Main extends JavaPlugin implements Listener
 {
     HashMap<Shulker, Crate> serverCrates = new HashMap<>();
     HashMap<Player, Crate> lastSpawned = new HashMap<>();
+    HashMap<Shulker, Boolean> shulker_bool = new HashMap<>();
 
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
@@ -92,10 +93,7 @@ public class Main extends JavaPlugin implements Listener
                 System.currentTimeMillis() + (getConfig().getLong("deathcrates.despawn-time-min") * 60 * 1000)
         );
         if (crate.getData().getHasSentRespawnMessage()) return;
-        if (crate.getData().getHasSpawned())
-           crate.getOwner().sendMessage(this.getConfig().getString("deathcrates.respawn-message"));
-        else
-           crate.getOwner().sendMessage(this.getConfig().getString("deathcrates.crate-unspawnable-message"));
+        crate.getOwner().sendMessage(this.getConfig().getString("deathcrates.respawn-message"));
         crate.getData().setHasSentRespawnMessage(true);
     }
 
@@ -142,20 +140,7 @@ public class Main extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntitySpawn(EntitySpawnEvent spawnEvent) {
         if (!(spawnEvent.getEntity() instanceof Shulker)) return;
-        Optional<Crate> opt = lastSpawned.values().stream()
-                .filter(c -> c.getShulker().equals(spawnEvent.getEntity()))
-                .findFirst();
-        if (!opt.isPresent()) return;
-        Crate crate = opt.get();
-
-        crate.getData().setHasSpawned(!spawnEvent.isCancelled());
-        for (ItemStack i: crate.getData().getInventory().getContents()) {
-            if (i == null) continue;
-            if (i.getType().equals(Material.AIR)) continue;
-            crate.getShulker().getWorld().dropItemNaturally(crate.getShulker().getLocation(), i);
-            crate.getData().getInventory().remove(i);
-        }
-        deleteCrate(crate);
+        shulker_bool.put((Shulker)spawnEvent.getEntity(), spawnEvent.isCancelled());
     }
 
     public void spawnCrate(Location location, List<ItemStack> drops, int newXP, Player player) {
@@ -169,6 +154,17 @@ public class Main extends JavaPlugin implements Listener
         PlayerCrateData pcd = new PlayerCrateData(inventory, newXP, 0L, player.getLocation());
 
         Shulker shulker = (Shulker) location.getWorld().spawnEntity(location, EntityType.SHULKER);
+        if (shulker_bool.get(shulker)) {
+            for (ItemStack i: inventory.getContents()) {
+                if (i == null) continue;
+                if (i.getType().equals(Material.AIR)) continue;
+                shulker.getWorld().dropItemNaturally(shulker.getLocation(), i);
+                inventory.remove(i);
+            }
+            shulker_bool.remove(shulker);
+            player.sendMessage(this.getConfig().getString("deathcrates.crate-unspawnable-message"));
+            return;
+        }
         shulker.setCustomName(crateName);
         shulker.setSilent(true);
         shulker.setInvulnerable(true);
@@ -186,6 +182,7 @@ public class Main extends JavaPlugin implements Listener
     public void deleteCrate(Crate crate) {
         serverCrates.remove(crate.getShulker());
         crate.getShulker().remove();
+        shulker_bool.remove(crate.getShulker());
         crate.getShulker().getWorld().spawnParticle(Particle.SMOKE_LARGE, crate.getShulker().getLocation(), 3);
     }
 

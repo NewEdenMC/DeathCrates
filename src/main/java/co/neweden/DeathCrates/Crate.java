@@ -18,4 +18,5 @@ public class Crate
     public Player getOwner() { return owner; }
     public PlayerCrateData getData() { return pcd; }
     public Shulker getShulker() { return shulker; }
+
 }
