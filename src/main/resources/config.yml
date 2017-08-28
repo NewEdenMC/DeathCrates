@@ -6,3 +6,4 @@ deathcrates:
   insufficient-permissions-message: §dYou're unable to open this crate as it is not yours!
   action-not-allowed-message: §dYou can't do that
   crate-unspawnable-message: §dYour crate couldn't be spawned as the area you died in does not allow Shulker Entities to spawn; Your items have been dropped on the ground at your death location
+  crate-unspawnable-location-message: §dYour crate couldn't be spawned because there were no air/water blocks around your death location; Your items have been dropped on the ground at your death location

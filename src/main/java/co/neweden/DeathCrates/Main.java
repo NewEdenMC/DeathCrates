@@ -82,7 +82,8 @@ public class Main extends JavaPlugin implements Listener
         }
 
         if (cLocation != null)
-            spawnCrate(cLocation, drops, deathEvent.getDroppedExp(), deathEvent.getEntity());
+        { spawnCrate(cLocation, drops, deathEvent.getDroppedExp(), deathEvent.getEntity()); }
+        else { deadPlayer.sendMessage(this.getConfig().getString("deathcrates.crate-unspawnable-location-message")); }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
