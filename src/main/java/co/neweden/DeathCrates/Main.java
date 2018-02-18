@@ -25,9 +25,9 @@ import java.util.logging.Level;
  */
 public class Main extends JavaPlugin implements Listener
 {
-    HashMap<Shulker, Crate> serverCrates = new HashMap<>();
+    HashMap<UUID, Crate> serverCrates = new HashMap<>();
     HashMap<Player, Crate> lastSpawned = new HashMap<>();
-    HashMap<Shulker, Boolean> shulker_bool = new HashMap<>();
+    HashMap<UUID, Boolean> shulker_bool = new HashMap<>();
 
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
@@ -73,7 +73,7 @@ public class Main extends JavaPlugin implements Listener
                 deathEvent.getEntity().getLocation().getBlock().getType().equals(Material.WATER)) {
             cLocation = deathEvent.getEntity().getLocation();
         } else {
-            for (Block block : Utils.getNearbyBlocks(deathEvent.getEntity().getLocation(), 5)) {
+            for (Block block : Utils.getNearbyBlocks(deathEvent.getEntity().getLocation(), this.getConfig().getInt("deathcrates.block-check-radius", 5))) {
                 if (block.getType().equals(Material.AIR) || block.getType().equals(Material.WATER)) {
                     cLocation = block.getLocation();
                     break;
@@ -136,12 +136,13 @@ public class Main extends JavaPlugin implements Listener
 
         if (x > 0) return;
         deleteCrate(crate);
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntitySpawn(EntitySpawnEvent spawnEvent) {
         if (!(spawnEvent.getEntity() instanceof Shulker)) return;
-        shulker_bool.put((Shulker)spawnEvent.getEntity(), spawnEvent.isCancelled());
+        shulker_bool.put(spawnEvent.getEntity().getUniqueId(), spawnEvent.isCancelled());
     }
 
     public void spawnCrate(Location location, List<ItemStack> drops, int newXP, Player player) {
@@ -155,14 +156,14 @@ public class Main extends JavaPlugin implements Listener
         PlayerCrateData pcd = new PlayerCrateData(inventory, newXP, 0L, player.getLocation());
 
         Shulker shulker = (Shulker) location.getWorld().spawnEntity(location, EntityType.SHULKER);
-        if (shulker_bool.get(shulker)) {
+        if (shulker_bool.get(shulker.getUniqueId())) {
             for (ItemStack i: inventory.getContents()) {
                 if (i == null) continue;
                 if (i.getType().equals(Material.AIR)) continue;
                 shulker.getWorld().dropItemNaturally(shulker.getLocation(), i);
                 inventory.remove(i);
             }
-            shulker_bool.remove(shulker);
+            shulker_bool.remove(shulker.getUniqueId());
             player.sendMessage(this.getConfig().getString("deathcrates.crate-unspawnable-message"));
             return;
         }
@@ -175,28 +176,30 @@ public class Main extends JavaPlugin implements Listener
         shulker.setCollidable(false);
         shulker.setGlowing(true);
         shulker.setColor(DyeColor.WHITE);
+        //shulker.setRemoveWhenFarAway(false);
         Crate crate = new Crate(player, pcd, shulker);
-        serverCrates.put(crate.getShulker(), crate);
+        serverCrates.put(crate.getShulker().getUniqueId(), crate);
         lastSpawned.put(player, crate);
+
     }
 
     public void deleteCrate(Crate crate) {
-        serverCrates.remove(crate.getShulker());
+        serverCrates.remove(crate.getShulker().getUniqueId());
         crate.getShulker().remove();
-        shulker_bool.remove(crate.getShulker());
+        shulker_bool.remove(crate.getShulker().getUniqueId());
         crate.getShulker().getWorld().spawnParticle(Particle.SMOKE_LARGE, crate.getShulker().getLocation(), 3);
     }
 
     public Crate getCrate(Entity entity) {
         if (!(entity instanceof Shulker)) return null;
-        return serverCrates.get(entity);
+        return serverCrates.get(entity.getUniqueId());
     }
 
     private Crate onRespawn(Player player) {
         Crate crate = lastSpawned.get(player);
+        if (crate == null) return null;
         if (crate.getData().getExpiryTime() != 0) return null;
         lastSpawned.remove(player);
         return crate;
     }
-
 }

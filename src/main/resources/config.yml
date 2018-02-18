@@ -1,9 +1,10 @@
 deathcrates:
   crate-clear-delay-ms: 10000
   despawn-time-min: 5
-  respawn-message: §dYour items have been placed into a Death Crate at the location you died at, the Crate will de-spawn after 5 minutes
+  block-check-radius: 5
+  respawn-message: Your items have been placed into a Death Crate at the location you died at, the Crate will de-spawn after 5 minutes
   crate-name: NAME's Death Crate
-  insufficient-permissions-message: §dYou're unable to open this crate as it is not yours!
-  action-not-allowed-message: §dYou can't do that
-  crate-unspawnable-message: §dYour crate couldn't be spawned as the area you died in does not allow Shulker Entities to spawn; Your items have been dropped on the ground at your death location
-  crate-unspawnable-location-message: §dYour crate couldn't be spawned because there were no air/water blocks around your death location; Your items have been dropped on the ground at your death location
+  insufficient-permissions-message: You're unable to open this crate as it is not yours!
+  action-not-allowed-message: You can't do that
+  crate-unspawnable-message: Your crate couldn't be spawned as the area you died in does not allow Shulker Entities to spawn; Your items have been dropped on the ground at your death location
+  crate-unspawnable-location-message: Your crate couldn't be spawned because there were no air/water blocks around your death location; Your items have been dropped on the ground at your death location
