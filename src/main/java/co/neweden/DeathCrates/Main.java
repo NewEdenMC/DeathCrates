@@ -186,6 +186,7 @@ public class Main extends JavaPlugin implements Listener
     public void deleteCrate(Crate crate) {
         serverCrates.remove(crate.getShulker().getUniqueId());
         crate.getShulker().remove();
+
         shulker_bool.remove(crate.getShulker().getUniqueId());
         crate.getShulker().getWorld().spawnParticle(Particle.SMOKE_LARGE, crate.getShulker().getLocation(), 3);
     }
@@ -201,5 +202,14 @@ public class Main extends JavaPlugin implements Listener
         if (crate.getData().getExpiryTime() != 0) return null;
         lastSpawned.remove(player);
         return crate;
+    }
+
+    private Shulker getShulkerByUUID(UUID shulkerUuid) {
+        Entity entityFromServer = Bukkit.getEntity(shulkerUuid);
+        if (entityFromServer == null) {
+            return null;
+        } else {
+            return ((Shulker) entityFromServer);
+        }
     }
 }
