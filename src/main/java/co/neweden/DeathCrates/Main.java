@@ -29,6 +29,9 @@ public class Main extends JavaPlugin implements Listener
     HashMap<Player, Crate> lastSpawned = new HashMap<>();
     HashMap<UUID, Boolean> shulker_bool = new HashMap<>();
 
+    public HashMap<UUID, Crate> getServerCrates() { return serverCrates; }
+    public HashMap<UUID, Boolean> getShulker_bool() { return shulker_bool; }
+
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
         this.saveDefaultConfig();
@@ -184,11 +187,27 @@ public class Main extends JavaPlugin implements Listener
     }
 
     public void deleteCrate(Crate crate) {
-        serverCrates.remove(crate.getShulker().getUniqueId());
-        crate.getShulker().remove();
+        System.out.println("DELETECRATE METHOD CALLED: " + crate.getShulkerUuid());
+        System.out.println("DELETECRATE METHOD CALLED: " + crate.getShulker().toString());
+        //serverCrates.remove(crate.getShulker().getUniqueId());
+        Shulker shulker = crate.reloadAndGet();
+        if (shulker == null) {
+            serverCrates.remove(crate.getShulkerUuid());
+            shulker_bool.remove(crate.getShulkerUuid());
+        } else {
+            serverCrates.remove(shulker.getUniqueId());
+            shulker_bool.remove(shulker.getUniqueId());
+            shulker.remove();
+        }
+        //crate.getShulker().remove();
 
-        shulker_bool.remove(crate.getShulker().getUniqueId());
-        crate.getShulker().getWorld().spawnParticle(Particle.SMOKE_LARGE, crate.getShulker().getLocation(), 3);
+        //shulker_bool.remove(crate.getShulker().getUniqueId());
+        //crate.getShulker().getWorld().spawnParticle(Particle.SMOKE_LARGE, crate.getShulker().getLocation(), 3);
+        if (crate.getShulkerLocation() != null)
+        {
+            Location loc = crate.getShulkerLocation();
+            loc.getWorld().spawnParticle(Particle.SMOKE_LARGE, loc, 3);
+        }
     }
 
     public Crate getCrate(Entity entity) {
